@@ -3,65 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bay2Solve - Web & Mobile Development</title>
+    <title>Math & Utility Hub</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Bay2Solve</h1>
-        <p>Your Trusted Partner for Web & Mobile Development</p>
-        <nav>
-            <a href="#services">Services</a>
-            <a href="#portfolio">Portfolio</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
-        </nav>
+        <h1>Math & Utility Hub</h1>
+        <button id="themeToggle">🌙 Toggle Theme</button>
     </header>
 
-    <section id="services">
-        <h2>Our Services</h2>
-        <div class="service-container">
-            <div class="service-card">🌍 Web Development</div>
-            <div class="service-card">📱 Mobile Apps</div>
-            <div class="service-card">🤖 AI Solutions</div>
-            <div class="service-card">💡 Custom Software</div>
-        </div>
-    </section>
+    <nav>
+        <input type="text" id="searchBox" placeholder="Search..." onkeyup="searchFunction()">
+        <ul id="menu">
+            <li onclick="loadCalculator('arithmetic')">Arithmetic</li>
+            <li onclick="loadCalculator('algebra')">Algebra</li>
+            <li onclick="loadCalculator('vector')">Vector Algebra</li>
+            <li onclick="loadCalculator('geometry')">Geometry</li>
+            <li onclick="loadCalculator('matrix')">Matrix</li>
+            <li onclick="loadCalculator('general')">General Calculator</li>
+            <li onclick="loadCalculator('scientific')">Scientific Calculator</li>
+            <li onclick="loadCalculator('converter')">Metrics Converter</li>
+            <li onclick="loadCalculator('programmer')">Programmer Calculator</li>
+        </ul>
+    </nav>
 
-    <section id="portfolio">
-        <h2>Portfolio</h2>
-        <div class="portfolio-container">
-            <div class="portfolio-card">
-                <img src="portfolio1.jpg" alt="Portfolio 1">
-                <h3>AI-Powered Chatbot</h3>
-                <p>Built an intelligent chatbot for automated customer service.</p>
-            </div>
-            <div class="portfolio-card">
-                <img src="portfolio2.jpg" alt="Portfolio 2">
-                <h3>eCommerce Web App</h3>
-                <p>Designed a fully responsive online shopping platform.</p>
-            </div>
-            <div class="portfolio-card">
-                <img src="portfolio3.jpg" alt="Portfolio 3">
-                <h3>Mobile Expense Tracker</h3>
-                <p>Developed an Android/iOS app for tracking daily expenses.</p>
-            </div>
-        </div>
-    </section>
+    <main id="calculatorContainer">
+        <p>Select a category to start solving!</p>
+    </main>
 
-    <section id="about">
-        <h2>About Us</h2>
-        <p>Bay2Solve is a dedicated software development agency, helping businesses with modern, scalable, and innovative technology solutions.</p>
-    </section>
-
-    <section id="contact">
-        <h2>Contact Us</h2>
-        <p>Email: <a href="mailto:your-email@example.com">your-email@example.com</a></p>
-        <p>Upwork: <a href="https://www.upwork.com/" target="_blank">Hire Us on Upwork</a></p>
-    </section>
-
-    <footer>
-        <p>&copy; 2025 Bay2Solve. All rights reserved.</p>
-    </footer>
+    <script src="script.js"></script>
 </body>
 </html>
