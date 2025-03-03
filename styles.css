@@ -23,38 +23,13 @@ nav {
     margin-bottom: 10px;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
+/* Grid-based menu layout */
+#menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-ul li {
-    padding: 10px;
-    background: #ddd;
-    margin: 5px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-ul li:hover {
-    background: #bbb;
-}
-
-#calculatorContainer {
-    padding: 20px;
-}
-
-/* Dark Mode */
-.dark-mode {
-    background-color: #222;
-    color: white;
-}
-
-.dark-mode header {
-    background: #444;
-}
-
-.dark-mode ul li {
-    background: #555;
-    color: white;
-}
+/* Individual menu items
