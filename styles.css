@@ -32,4 +32,42 @@ nav {
     margin: 0 auto;
 }
 
-/* Individual menu items
+/* Individual menu items */
+.menu-item {
+    background: #ddd;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.menu-item:hover {
+    background: #bbb;
+}
+
+.icon {
+    font-size: 30px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Dark Mode */
+.dark-mode {
+    background-color: #222;
+    color: white;
+}
+
+.dark-mode header {
+    background: #444;
+}
+
+.dark-mode .menu-item {
+    background: #555;
+    color: white;
+}
