@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube GIF Creator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        video { width: 80%; max-width: 640px; margin: 10px 0; }
+        #previewPanel img { width: 200px; height: auto; display: block; margin: 5px auto; }
+        button { margin: 5px; padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2>YouTube GIF Creator</h2>
+    <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
+    <button onclick="loadVideo()">Load Video</button>
+    <br>
+
+    <video id="videoPlayer" controls></video>
+    <br>
+
+    <button onclick="captureFrame()">Capture Clip</button>
+    <button onclick="previewGif()">Preview GIF</button>
+    <button onclick="resetGif()">Reset</button>
+    <button onclick="downloadGif()">Download GIF</button>
+
+    <h3>GIF Preview</h3>
+    <div id="previewPanel"></div>
+
+    <script>
+        let capturedFrames = [];
+
+        function loadVideo() {
+            let url = document.getElementById("videoUrl").value;
+            let videoId = extractYouTubeID(url);
+            if (videoId) {
+                document.getElementById("videoPlayer").src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+            } else {
+                alert("Invalid YouTube URL");
+            }
+        }
+
+        function extractYouTubeID(url) {
+            let match = url.match(/[?&]v=([^&]+)/) || url.match(/youtu\.be\/([^?]+)/);
+            return match ? match[1] : null;
+        }
+
+        function captureFrame() {
+            let video = document.getElementById("videoPlayer");
+            let canvas = document.createElement("canvas");
+            let ctx = canvas.getContext("2d");
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            let imgData = canvas.toDataURL("image/png");
+            capturedFrames.push(imgData);
+        }
+
+        function previewGif() {
+            if (capturedFrames.length === 0) {
+                alert("No frames captured!");
+                return;
+            }
+
+            let gif = new GIF({ workers: 2, quality: 10 });
+
+            capturedFrames.forEach(frame => {
+                let img = new Image();
+                img.src = frame;
+                img.onload = function () {
+                    let canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    let ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                    gif.addFrame(canvas, { delay: 200 });
+                };
+            });
+
+            gif.on('finished', function (blob) {
+                let previewPanel = document.getElementById("previewPanel");
+                previewPanel.innerHTML = "";
+                let img = document.createElement("img");
+                img.src = URL.createObjectURL(blob);
+                previewPanel.appendChild(img);
+            });
+
+            gif.render();
+        }
+
+        function resetGif() {
+            capturedFrames = [];
+            document.getElementById("previewPanel").innerHTML = "";
+        }
+
+        function downloadGif() {
+            if (capturedFrames.length === 0) {
+                alert("No GIF to download!");
+                return;
+            }
+
+            let gif = new GIF({ workers: 2, quality: 10 });
+
+            capturedFrames.forEach(frame => {
+                let img = new Image();
+                img.src = frame;
+                img.onload = function () {
+                    let canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    let ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                    gif.addFrame(canvas, { delay: 200 });
+                };
+            });
+
+            gif.on('finished', function (blob) {
+                let a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = "captured.gif";
+                a.click();
+            });
+
+            gif.render();
+        }
+    </script>
+
+</body>
+</html>
