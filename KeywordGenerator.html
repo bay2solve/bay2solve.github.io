@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Keyword Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        textarea { width: 100%; height: 100px; margin-bottom: 10px; }
+        button { padding: 10px; margin: 5px; }
+        #keywords { margin-top: 10px; font-weight: bold; color: green; }
+    </style>
+</head>
+<body>
+
+    <h2>Keyword Generator</h2>
+    <textarea id="textInput" placeholder="Enter your text here..."></textarea>
+    
+    <br>
+    <button onclick="generateKeywords()">Generate Keywords</button>
+    
+    <p id="keywords"></p>
+
+    <script>
+        function generateKeywords() {
+            let text = document.getElementById("textInput").value.toLowerCase();
+
+            // Common stop words to remove
+            let stopWords = ["the", "is", "in", "at", "which", "on", "and", "a", "an", "to", "for", "with", "by", "that", "of", "it", "this", "as", "are"];
+
+            // Remove punctuation and split into words
+            let words = text.replace(/[^\w\s]/gi, "").split(/\s+/);
+
+            // Filter out stop words and get unique keywords
+            let keywords = [...new Set(words.filter(word => !stopWords.includes(word) && word.length > 2))];
+
+            // Display keywords
+            document.getElementById("keywords").innerText = "Keywords: " + keywords.join(", ");
+        }
+    </script>
+
+</body>
+</html>
