@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Signature Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 10px; touch-action: none; }
+        canvas { border: 2px solid black; background: white; display: block; margin: auto; cursor: crosshair; }
+        .controls { margin: 10px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .controls button, input { padding: 8px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <h2>Signature Generator</h2>
+    <div class="controls">
+        <label>Color: <input type="color" id="colorPicker"></label>
+        <label>Thickness: <input type="range" id="sizePicker" min="1" max="10" value="3"></label>
+        <button onclick="clearCanvas()">Clear</button>
+        <button onclick="downloadSignature()">Download</button>
+    </div>
+
+    <canvas id="signatureCanvas"></canvas>
+
+    <script>
+        let canvas = document.getElementById("signatureCanvas");
+        let ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth * 0.9;
+            canvas.height = 300;
+        }
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+
+        let drawing = false;
+
+        function getCoordinates(event) {
+            if (event.touches) {
+                return {
+                    x: event.touches[0].clientX - canvas.offsetLeft,
+                    y: event.touches[0].clientY - canvas.offsetTop
+                };
+            } else {
+                return {
+                    x: event.offsetX,
+                    y: event.offsetY
+                };
+            }
+        }
+
+        function startDrawing(event) {
+            event.preventDefault();
+            drawing = true;
+            let { x, y } = getCoordinates(event);
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function draw(event) {
+            if (!drawing) return;
+            event.preventDefault();
+            let { x, y } = getCoordinates(event);
+            ctx.strokeStyle = document.getElementById("colorPicker").value;
+            ctx.lineWidth = document.getElementById("sizePicker").value;
+            ctx.lineCap = "round";
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            drawing = false;
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function downloadSignature() {
+            let link = document.createElement("a");
+            link.download = "signature.png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
+
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mouseleave", stopDrawing);
+
+        canvas.addEventListener("touchstart", startDrawing);
+        canvas.addEventListener("touchmove", draw);
+        canvas.addEventListener("touchend", stopDrawing);
+    </script>
+
+</body>
+</html>
