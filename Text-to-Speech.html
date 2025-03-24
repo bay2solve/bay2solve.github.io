@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Speech Tool</title>
+    <title>Text to Speech with Download</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         textarea { width: 100%; height: 100px; margin-bottom: 10px; }
@@ -12,7 +12,7 @@
 </head>
 <body>
 
-    <h2>Simple Text-to-Speech Tool</h2>
+    <h2>Text-to-Speech with Download</h2>
     <textarea id="textInput" placeholder="Enter text here..."></textarea>
     
     <br>
@@ -23,10 +23,13 @@
     <button onclick="pauseSpeech()">Pause</button>
     <button onclick="resumeSpeech()">Resume</button>
     <button onclick="stopSpeech()">Stop</button>
+    <button onclick="downloadSpeech()">Download</button>
 
     <script>
         let synth = window.speechSynthesis;
         let voices = [];
+        let audioChunks = [];
+        let mediaRecorder;
 
         function loadVoices() {
             voices = synth.getVoices();
@@ -50,6 +53,7 @@
             if (selectedVoice) utterance.voice = selectedVoice;
 
             synth.speak(utterance);
+            startRecording(); // Start recording for download
         }
 
         function pauseSpeech() {
@@ -62,6 +66,40 @@
 
         function stopSpeech() {
             synth.cancel();
+            stopRecording(); // Stop recording when speech stops
+        }
+
+        function startRecording() {
+            audioChunks = [];
+            let audioContext = new AudioContext();
+            let destination = audioContext.createMediaStreamDestination();
+            let mediaStream = destination.stream;
+            mediaRecorder = new MediaRecorder(mediaStream);
+            
+            mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) audioChunks.push(event.data);
+            };
+            
+            mediaRecorder.onstop = () => {
+                let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                let audioUrl = URL.createObjectURL(audioBlob);
+                let a = document.createElement("a");
+                a.href = audioUrl;
+                a.download = "speech.wav";
+                a.click();
+            };
+            
+            mediaRecorder.start();
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+            }
+        }
+
+        function downloadSpeech() {
+            stopRecording(); // Ensure recording is stopped before download
         }
 
         window.speechSynthesis.onvoiceschanged = loadVoices;
