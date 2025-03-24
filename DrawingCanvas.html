@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drawing Canvas with Tools</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Drawing Canvas (Mobile & Desktop)</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 10px; }
-        canvas { border: 1px solid black; cursor: crosshair; background: white; }
-        .tools { margin: 10px; }
-        .tools button, select, input { margin: 5px; padding: 8px; }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 10px; touch-action: none; }
+        canvas { border: 1px solid black; cursor: crosshair; background: white; display: block; margin: auto; }
+        .tools { margin: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+        .tools button, select, input { padding: 8px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -31,11 +31,19 @@
         <button onclick="downloadCanvas()">Download</button>
     </div>
 
-    <canvas id="drawingCanvas" width="800" height="500"></canvas>
+    <canvas id="drawingCanvas"></canvas>
 
     <script>
         let canvas = document.getElementById("drawingCanvas");
         let ctx = canvas.getContext("2d");
+
+        // Set canvas size dynamically
+        function resizeCanvas() {
+            canvas.width = window.innerWidth * 0.9;
+            canvas.height = window.innerHeight * 0.6;
+        }
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
 
         let drawing = false;
         let startX, startY;
@@ -45,25 +53,50 @@
         let shapePicker = document.getElementById("shapePicker");
         let textInput = document.getElementById("textInput");
 
+        // Event Listeners for Mouse and Touch
         canvas.addEventListener("mousedown", startDrawing);
         canvas.addEventListener("mousemove", draw);
         canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mouseleave", stopDrawing);
 
-        function startDrawing(e) {
-            drawing = true;
-            startX = e.offsetX;
-            startY = e.offsetY;
-            currentShape = shapePicker.value;
+        canvas.addEventListener("touchstart", startDrawing);
+        canvas.addEventListener("touchmove", draw);
+        canvas.addEventListener("touchend", stopDrawing);
 
-            if (currentShape === "text") {
-                drawText(startX, startY);
+        function getCoordinates(event) {
+            if (event.touches) {
+                return {
+                    x: event.touches[0].clientX - canvas.offsetLeft,
+                    y: event.touches[0].clientY - canvas.offsetTop
+                };
+            } else {
+                return {
+                    x: event.offsetX,
+                    y: event.offsetY
+                };
             }
         }
 
-        function draw(e) {
+        function startDrawing(event) {
+            event.preventDefault();
+            let { x, y } = getCoordinates(event);
+            drawing = true;
+            startX = x;
+            startY = y;
+            currentShape = shapePicker.value;
+
+            if (currentShape === "text") {
+                drawText(x, y);
+            } else if (currentShape === "free" || currentShape === "eraser") {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            }
+        }
+
+        function draw(event) {
             if (!drawing) return;
-            let x = e.offsetX;
-            let y = e.offsetY;
+            event.preventDefault();
+            let { x, y } = getCoordinates(event);
             ctx.strokeStyle = colorPicker.value;
             ctx.lineWidth = sizePicker.value;
             ctx.lineCap = "round";
@@ -82,11 +115,10 @@
             }
         }
 
-        function stopDrawing(e) {
+        function stopDrawing(event) {
             if (!drawing) return;
             drawing = false;
-            let x = e.offsetX;
-            let y = e.offsetY;
+            let { x, y } = getCoordinates(event);
 
             ctx.beginPath();
             if (currentShape === "rectangle") {
